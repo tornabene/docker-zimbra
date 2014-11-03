@@ -11,7 +11,8 @@ RUN apt-get -y install sudo wget tar curl
 ADD singleuser /etc/sudoers.d/singleuser
 RUN chown root. /etc/sudoers.d/singleuser
 
-RUN apt-get -y install perl sysstat nc libaio hostname
+RUN apt-get -y install perl sysstat  hostname 
+#libaio nc
 RUN mkdir /tmp/zcs 
 WORKDIR /tmp/zcs
 
