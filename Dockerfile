@@ -1,4 +1,4 @@
-FROM centos:6.4
+FROM centos:latest
 
 MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 
@@ -6,11 +6,6 @@ MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 RUN yum -y install openssh-server
 RUN useradd -mUs /bin/bash -p '$6$iKh435EZ$XF4mLsy9/hQKmeyE8pbSddiR7QfHT0Mo78fb0LYx6FaxCoJimKlUoCxWflrfgACG.dJxH0ZUdULp/5VOXdSFh.' user 
 ADD sshd /etc/pam.d/sshd
-
-VOLUME ["/home"]
-
-EXPOSE 22
-ADD start.sh /start.sh
 
 RUN yum -y install sudo
 ADD singleuser /etc/sudoers.d/singleuser
@@ -24,6 +19,7 @@ RUN cd /tmp/zcs/zcs-* && patch util/utilfunc.sh </tmp/zcs/utilfunc.sh.patch
 RUN cd /tmp/zcs/zcs-* && ./install.sh -s --platform-override /tmp/zcs/config.defaults
 RUN mv /opt/zimbra /opt/.zimbra
 
+VOLUME ["/home"]
 VOLUME ["/opt/zimbra"]
 
 EXPOSE 22
