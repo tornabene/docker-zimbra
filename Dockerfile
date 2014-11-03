@@ -1,21 +1,22 @@
-FROM centos:latest
+FROM ubuntu:trusty
 
 MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 
 
-RUN yum -y install openssh-server
+RUN apt-get -y install openssh-server
 RUN useradd -mUs /bin/bash -p '$6$iKh435EZ$XF4mLsy9/hQKmeyE8pbSddiR7QfHT0Mo78fb0LYx6FaxCoJimKlUoCxWflrfgACG.dJxH0ZUdULp/5VOXdSFh.' user 
 ADD sshd /etc/pam.d/sshd
 
-RUN yum -y install sudo wget tar
+RUN apt-get -y install sudo wget tar curl
 ADD singleuser /etc/sudoers.d/singleuser
 RUN chown root. /etc/sudoers.d/singleuser
 
-RUN yum -y install perl sysstat nc libaio
+RUN apt-get -y install perl sysstat nc libaio hostname
 RUN mkdir /tmp/zcs 
 WORKDIR /tmp/zcs
-RUN wget http://files2.zimbra.com/downloads/8.5.0_GA/zcs-8.5.0_GA_3042.RHEL7_64.20140828204420.tgz -O  /tmp/zcs/zcs-8.5.0_GA_3042.RHEL7_64.20140828204420.tgz
-RUN tar xzvf  /tmp/zcs/zcs-8.5.0_GA_3042.RHEL7_64.20140828204420.tgz 
+
+RUN curl -O http://files2.zimbra.com/downloads/8.5.0_GA/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz -O  /tmp/zcs/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz
+RUN tar xzvf  /tmp/zcs/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz 
 RUN chown -R user. /tmp/zcs
 
 ADD config.defaults /tmp/zcs/config.defaults
