@@ -6,33 +6,51 @@ RUN apt-get -y update
 RUN apt-get -y install openssh-server && mkdir /var/run/sshd
 
 RUN apt-get -y install sudo wget tar curl
-ADD singleuser /etc/sudoers.d/singleuser
-RUN chown root. /etc/sudoers.d/singleuser
 
 RUN apt-get -y install perl sysstat  hostname libidn11 libpcre3 libexpat1 libgmp3-dev patch pax sqlite3 libperl5.18 libaio1 unzip
- 
+
+
 RUN mkdir /tmp/zcs 
 WORKDIR /tmp/zcs
 RUN pwd
 
-ENV ZIMBRA zcs-8.0.8_GA_6184.UBUNTU14_64.20140925165809.tgz
-RUN wget http://files2.zimbra.com/downloads/8.0.8_GA/$ZIMBRA
-#RUN wget  http://10.10.130.35/$ZIMBRA
+ENV ZIMBRA zcs-8.0.8_GA_6184.UBUNTU14_64.20140925165809
+#RUN wget http://files2.zimbra.com/downloads/8.0.8_GA/$ZIMBRA.tgz
+RUN wget  http://10.10.130.35/$ZIMBRA.tgz
 WORKDIR /tmp/zcs
-RUN tar xzvf $ZIMBRA
+RUN tar xzvf $ZIMBRA.tgz
+RUN mv $ZIMBRA zcs-install
+
+RUN locale-gen --no-purge it_IT.UTF-8
+ENV LC_ALL it_IT.UTF-8
+RUN update-locale LANG=it_IT.UTF-8
 
 ADD config.defaults /tmp/zcs/config.defaults
 ADD utilfunc.sh.patch /tmp/zcs/utilfunc.sh.patch
-#ADD utilfunc.sh.patch /tmp/zcs/utilfunc.sh.patch
-#RUN cd /tmp/zcs/zcs-* && patch util/utilfunc.sh </tmp/zcs/utilfunc.sh.patch
 ADD utilfunc.sh /tmp/zcs/utilfunc.sh
-RUN cd /tmp/zcs/zcs-* && cd  util && cp /tmp/zcs/utilfunc.sh utilfunc.sh
+RUN cp /tmp/zcs/utilfunc.sh /tmp/zcs/zcs-install/util/utilfunc.sh
 
-RUN cd /tmp/zcs/zcs-* && ./install.sh -s --platform-override /tmp/zcs/config.defaults
-RUN mv /opt/zimbra /opt/.zimbra
+RUN echo 'root:zimbra' |chpasswd
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 
+
+
+
+WORKDIR /tmp/zcs/zcs-install
+RUN pwd
+RUN ./install.sh -s --platform-override /tmp/zcs/config.defaults
+RUN mv /opt/zimbra /opt/installzimbra
+
+
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+
+
+ 
 VOLUME ["/home"]
 VOLUME ["/opt/zimbra"]
+
 
 EXPOSE 22
 EXPOSE 25
@@ -48,6 +66,6 @@ EXPOSE 8080
 EXPOSE 8443
 EXPOSE 7071
 
-ADD start.sh /start.sh
+
 
 CMD ["/start.sh"]
