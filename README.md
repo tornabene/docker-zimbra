@@ -15,3 +15,5 @@ docker-zimbra 8.08
 
  
  
+
+ sudo rsync -azP  root@10.10.130.15:/opt/zimbra /opt/zimbra
