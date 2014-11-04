@@ -5,8 +5,7 @@ MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 
 
 RUN apt-get -y update
-RUN apt-get -y install openssh-server 
-RUN mkdir /var/run/sshd
+RUN apt-get -y install openssh-server &&  mkdir /var/run/sshd
 RUN apt-get -y install sudo wget tar curl
 RUN apt-get -y install  perl sysstat  hostname libidn11 libpcre3 libexpat1 libgmp3-dev patch pax sqlite3 libaio1 unzip libgmp3c2 netcat-openbsd inetutils-ping net-tools libperl5.14
 
