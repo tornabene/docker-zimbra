@@ -16,8 +16,8 @@ WORKDIR /tmp/zcs
 ENV ZIMBRA zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908
 
 #RUN wget http://files2.zimbra.com/downloads/8.0.8_GA/$ZIMBRA.tgz
-#RUN wget http://files2.zimbra.com/downloads/8.0.7_GA/$ZIMBRA.tgz
-RUN wget  http://10.10.130.35/$ZIMBRA.tgz
+RUN wget http://files2.zimbra.com/downloads/8.0.7_GA/$ZIMBRA.tgz
+#RUN wget  http://10.10.130.35/$ZIMBRA.tgz
 
 WORKDIR /tmp/zcs
 RUN tar xzvf $ZIMBRA.tgz
@@ -28,7 +28,8 @@ ENV LC_ALL it_IT.UTF-8
 RUN update-locale LANG=it_IT.UTF-8
 
 ADD config.defaults /tmp/zcs/config.defaults
-ADD utilfunc.sh.patch /tmp/zcs/utilfunc.sh.patch
+
+
 #ADD utilfunc8.0.8.sh /tmp/zcs/utilfunc.sh
 ADD utilfunc8.0.7.sh /tmp/zcs/utilfunc.sh
 
