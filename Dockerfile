@@ -4,23 +4,26 @@ MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 
 
 RUN apt-get -y install openssh-server
-RUN useradd -mUs /bin/bash -p '$6$iKh435EZ$XF4mLsy9/hQKmeyE8pbSddiR7QfHT0Mo78fb0LYx6FaxCoJimKlUoCxWflrfgACG.dJxH0ZUdULp/5VOXdSFh.' user 
 ADD sshd /etc/pam.d/sshd
 
 RUN apt-get -y install sudo wget tar curl
 ADD singleuser /etc/sudoers.d/singleuser
 RUN chown root. /etc/sudoers.d/singleuser
 
-RUN apt-get -y install perl sysstat  hostname 
-#libaio nc
+RUN apt-get -y install perl sysstat  hostname libidn11 libpcre3 libexpat1 libgmp3-dev patch
+ 
 RUN mkdir /tmp/zcs 
 WORKDIR /tmp/zcs
-
-RUN curl -O http://files2.zimbra.com/downloads/8.5.0_GA/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz -O  /tmp/zcs/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz
-RUN tar xzvf  /tmp/zcs/zcs-8.5.0_GA_3042.UBUNTU14_64.20140828191919.tgz 
-RUN chown -R user. /tmp/zcs
+RUN pwd
+ENV ZIMBRA zcs-8.0.8_GA_6184.UBUNTU14_64.20140925165809.tgz
+#RUN wget  http://files2.zimbra.com/downloads/8.5.0_GA/$ZIMBRA
+RUN wget  http://10.10.130.35/$ZIMBRA
+WORKDIR /tmp/zcs
+RUN tar xzvf $ZIMBRA
 
 ADD config.defaults /tmp/zcs/config.defaults
+ADD utilfunc.sh.patch /tmp/zcs/utilfunc.sh.patch
+RUN cd /tmp/zcs/zcs-* && patch util/utilfunc.sh </tmp/zcs/utilfunc.sh.patch
 
 RUN cd /tmp/zcs/zcs-* && ./install.sh -s --platform-override /tmp/zcs/config.defaults
 RUN mv /opt/zimbra /opt/.zimbra
