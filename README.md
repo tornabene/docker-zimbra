@@ -1,4 +1,4 @@
-docker-zimbra
+docker-zimbra 8.08
 =============
 
 ### To build:
