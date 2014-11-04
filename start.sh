@@ -3,8 +3,7 @@
 ls /opt/zimbra/installed-by-docker || (
 cp -r  /opt/installzimbra/*  /opt/zimbra/
 rm -fr /opt/installzimbra/
-chown zimbra. /opt/zimbra
-
+chown -R zimbra. /opt/zimbra
 sed -i "s/XHOSTNAMEX/`hostname -f`/" /tmp/zcs/config.defaults
 sed -i "s/XPASSWORDX/`date | sha1sum | cut -c-8`/" /tmp/zcs/config.defaults
 sed -i "s/XPASSWORD2X/`date | sha1sum | cut -c-8`/" /tmp/zcs/config.defaults

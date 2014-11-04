@@ -1,22 +1,25 @@
-FROM ubuntu:trusty
+FROM ubuntu:precise
 
 MAINTAINER Tindaro Tornabene <tindaro.tornabene@gmail.com>
 
+
+
 RUN apt-get -y update
-RUN apt-get -y install openssh-server && mkdir /var/run/sshd
-
+RUN apt-get -y install openssh-server 
+RUN mkdir /var/run/sshd
 RUN apt-get -y install sudo wget tar curl
-
-RUN apt-get -y install perl sysstat  hostname libidn11 libpcre3 libexpat1 libgmp3-dev patch pax sqlite3 libperl5.18 libaio1 unzip
-
+RUN apt-get -y install  perl sysstat  hostname libidn11 libpcre3 libexpat1 libgmp3-dev patch pax sqlite3 libaio1 unzip libgmp3c2 netcat-openbsd inetutils-ping net-tools libperl5.14
 
 RUN mkdir /tmp/zcs 
 WORKDIR /tmp/zcs
-RUN pwd
 
-ENV ZIMBRA zcs-8.0.8_GA_6184.UBUNTU14_64.20140925165809
+#ENV ZIMBRA zcs-8.0.8_GA_6184.UBUNTU14_64.20140925165809
+ENV ZIMBRA zcs-8.0.7_GA_6021.UBUNTU12_64.20140408123908
+
 #RUN wget http://files2.zimbra.com/downloads/8.0.8_GA/$ZIMBRA.tgz
+#RUN wget http://files2.zimbra.com/downloads/8.0.7_GA/$ZIMBRA.tgz
 RUN wget  http://10.10.130.35/$ZIMBRA.tgz
+
 WORKDIR /tmp/zcs
 RUN tar xzvf $ZIMBRA.tgz
 RUN mv $ZIMBRA zcs-install
@@ -27,7 +30,9 @@ RUN update-locale LANG=it_IT.UTF-8
 
 ADD config.defaults /tmp/zcs/config.defaults
 ADD utilfunc.sh.patch /tmp/zcs/utilfunc.sh.patch
-ADD utilfunc.sh /tmp/zcs/utilfunc.sh
+#ADD utilfunc8.0.8.sh /tmp/zcs/utilfunc.sh
+ADD utilfunc8.0.7.sh /tmp/zcs/utilfunc.sh
+
 RUN cp /tmp/zcs/utilfunc.sh /tmp/zcs/zcs-install/util/utilfunc.sh
 
 RUN echo 'root:zimbra' |chpasswd
@@ -39,6 +44,7 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 
 WORKDIR /tmp/zcs/zcs-install
 RUN pwd
+RUN ls
 RUN ./install.sh -s --platform-override /tmp/zcs/config.defaults
 RUN mv /opt/zimbra /opt/installzimbra
 
@@ -53,6 +59,8 @@ VOLUME ["/opt/zimbra"]
 
 
 EXPOSE 22
+EXPOSE 389
+EXPOSE 5022
 EXPOSE 25
 EXPOSE 456
 EXPOSE 587
